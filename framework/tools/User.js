@@ -1,194 +1,161 @@
-if(!User.prototype.getID) {
-	Object.defineProperty(User.prototype, 'getID', {
-		enumerable:		false,
-		configurable:	false,
-		writable:		false,
-		value: function getID() {
-			return this.getUserId();
-		}
-	});
-}
+// tools/User.js
 
-if(!User.prototype.private) {
-	Object.defineProperty(User.prototype, 'private', {
-		enumerable:		false,
-		configurable:	false,
-		writable:		false,
-		value: function private(msg, delay) {
-			Bot.private(this, msg, delay);
-		}
-	});
-}
+var Bot = require('../core/Bot.js'); // Assuming you have a Bot module in your core directory
+var KBank = require('../core/KBank.js'); // Assuming you have a KBank module in your core directory
 
-if(!User.prototype.post) {
-	Object.defineProperty(User.prototype, 'post', {
-		enumerable:		false,
-		configurable:	false,
-		writable:		false,
-		value: function post(topic, text) {
-			this.sendPostMessage(topic, text);
-		}
-	});
-}
 
-if(!User.prototype.getProfilePicture) {
-	Object.defineProperty(User.prototype, 'getProfilePicture', {
-		enumerable:		false,
-		configurable:	false,
-		writable:		false,
-		value: function getProfilePicture(width, height) {
-			if(width == undefined) {
-				width = 200;
-			}
-			
-			if(height == undefined) {
-				height = width;
-			}
-			
-			if(this.hasProfilePhoto()) {
-				if(this.getProfilePhoto != undefined) {
-					return this.getProfilePhoto(width, height);
-				}
-				
-				return 'http://chat.knuddels.de/pics/fotos/knuddels.de?n=' + this.getNick().urlencode();
-			}
-			
-			if(this.getGender() == Gender.Female) {
-				return 'nopic_79x79_f.jpg';
-			}
-			
-			return 'nopic_79x79_m.jpg';
-		}
-	});
-}
+/**
+ * Gibt den aktuellen Benutzer zurück.
+ * @returns {User} Das Benutzerobjekt des aktuellen Benutzers.
+ */
+var getCurrentUser = function() {
+  return KnuddelsServer.getCurrentUser();
+};
 
-/*
-	@docs
-*/
-if(!User.prototype.getGenderString) {
-	Object.defineProperty(User.prototype, 'getGenderString', {
-		enumerable:		false,
-		configurable:	false,
-		writable:		false,
-		value: function getGenderString() {
-			switch(this.getGender()) {
-				case Gender.Male:
-					return 'male';
-				break;
-				case Gender.Female:
-					return 'female';
-				break;
-			}
-			
-			return 'none';
-		}
-	});
-}
+/**
+ * Gibt ein Array mit allen online befindlichen Benutzern zurück.
+ * @returns {Array} Ein Array von Benutzerobjekten.
+ */
+var getOnlineUsers = function() {
+  return KnuddelsServer.getChannel().getOnlineUsers();
+};
 
-if(!User.prototype.getKonto) {
-	Object.defineProperty(User.prototype, 'getKonto', {
-		enumerable:		false,
-		configurable:	false,
-		writable:		false,
-		value: function getKonto() {
-			return KBank.getKonto(this.getUserId());
-		}
-	});
-}
+/**
+ * Gibt ein Benutzerobjekt anhand des Nicknamens zurück.
+ * @param {string} nickname - Der Nickname des Benutzers.
+ * @returns {User|null} Das Benutzerobjekt, falls gefunden, sonst null.
+ */
+var getUserByName = function(nickname) {
+  return KnuddelsServer.getUser(nickname);
+};
 
-if(!User.prototype.getKn) {
-	Object.defineProperty(User.prototype, 'getKn', {
-		enumerable:		false,
-		configurable:	false,
-		writable:		false,
-		value: function getKn() {
-			return KBank.getKn(this.getUserId());
-		}
-	});
-}
+/**
+ * Gibt true zurück, wenn der Benutzer online ist, sonst false.
+ * @param {User} user - Das Benutzerobjekt.
+ * @returns {boolean} True, wenn der Benutzer online ist, sonst false.
+ */
+var isOnline = function(user) {
+  return user.isOnlineInChannel();
+};
 
-if(!User.prototype.getTotalKn) {
-	Object.defineProperty(User.prototype, 'getTotalKn', {
-		enumerable:		false,
-		configurable:	false,
-		writable:		false,
-		value: function getTotalKn() {
-			return KBank.getTotalKn(this.getUserId());
-		}
-	});
-}
+/**
+ * Gibt true zurück, wenn der Benutzer ein App-Entwickler ist, sonst false.
+ * @param {User} user - Das Benutzerobjekt.
+ * @returns {boolean} True, wenn der Benutzer ein App-Entwickler ist, sonst false.
+ */
+var isAppDeveloper = function(user) {
+  return user.getAppDeveloperType() !== 0;
+};
 
-if(!User.prototype.addKn) {
-	Object.defineProperty(User.prototype, 'addKn', {
-		enumerable:		false,
-		configurable:	false,
-		writable:		false,
-		value: function addKn(kn) {
-			return KBank.addKn(this.getUserId(), kn);
-		}
-	});
-}
+/**
+ * Gibt true zurück, wenn der Benutzer ein Channel-Moderator ist, sonst false.
+ * @param {User} user - Das Benutzerobjekt.
+ * @returns {boolean} True, wenn der Benutzer ein Channel-Moderator ist, sonst false.
+ */
+var isChannelModerator = function(user) {
+  return user.isChannelModerator();
+};
 
-if(!User.prototype.subKn) {
-	Object.defineProperty(User.prototype, 'subKn', {
-		enumerable:		false,
-		configurable:	false,
-		writable:		false,
-		value: function subKn(kn) {
-			return KBank.subKn(this.getUserId(), kn);
-		}
-	});
-}
+/**
+ * Gibt true zurück, wenn der Benutzer ein Channel-Owner ist, sonst false.
+ * @param {User} user - Das Benutzerobjekt.
+ * @returns {boolean} True, wenn der Benutzer ein Channel-Owner ist, sonst false.
+ */
+var isChannelOwner = function(user) {
+  return user.isChannelOwner();
+};
 
-if(!User.prototype.reqKn) {
-	Object.defineProperty(User.prototype, 'reqKn', {
-		enumerable:		false,
-		configurable:	false,
-		writable:		false,
-		value: function reqKn(kn, onSuccess, onError, reason) {
-			return KBank.reqKn(this.getUserId(), kn, onSuccess, onError, reason);
-		}
-	});
-}
+/**
+ * Gibt true zurück, wenn der Benutzer ein Event-Moderator ist, sonst false.
+ * @param {User} user - Das Benutzerobjekt.
+ * @returns {boolean} True, wenn der Benutzer ein Event-Moderator ist, sonst false.
+ */
+var isEventModerator = function(user) {
+  return user.isEventModerator();
+};
 
-if(!User.prototype.knuddel) {
-	Object.defineProperty(User.prototype, 'knuddel', {
-		enumerable:		false,
-		configurable:	false,
-		writable:		false,
-		value: function knuddel(amount, message) {
-			if(amount === undefined) {
-				return false;
-			}
-			
-			if(message === undefined) {
-				Bot.knuddel(this, amount);
-			} else {
-				Bot.knuddel(this, amount, message);
-			}
-			return true;
-		}
-	});
-}
+/**
+ * Gibt true zurück, wenn der Benutzer ein Admin ist, sonst false.
+ * @param {User} user - Das Benutzerobjekt.
+ * @returns {boolean} True, wenn der Benutzer ein Admin ist, sonst false.
+ */
+var isAdmin = function(user) {
+  return user.isAdmin();
+};
 
-if(!User.prototype.getKnuddels) {
-	Object.defineProperty(User.prototype, 'getKnuddels', {
-		enumerable:		false,
-		configurable:	false,
-		writable:		false,
-		value: function getKnuddels() {
-			return this.getKnuddelAmount().asNumber();
-		}
-	});
-}
+/**
+ * Gibt true zurück, wenn der Benutzer ein Bot ist, sonst false.
+ * @param {User} user - Das Benutzerobjekt.
+ * @returns {boolean} True, wenn der Benutzer ein Bot ist, sonst false.
+ */
+var isBot = function(user) {
+  return user.isBot();
+};
 
-if(!User.prototype.isVirtual) {
-	Object.defineProperty(User.prototype, 'isVirtual', {
-		enumerable:		false,
-		configurable:	false,
-		writable:		false,
-		value: function isVirtual() {
-			return false;
-		}
-	});
-}
+/**
+ * Sendet eine private Nachricht an den Benutzer.
+ * @param {string} msg - Der Nachrichtentext.
+ * @param {number} [delay] - Optionale Verzögerung in Millisekunden vor dem Senden der Nachricht.
+ */
+User.prototype.private = function(msg, delay) {
+  Bot.private(this, msg, delay);
+};
+
+/**
+ * Sendet eine Post-Nachricht an den Benutzer.
+ * @param {string} topic - Der Betreff der Post-Nachricht.
+ * @param {string} text - Der Text der Post-Nachricht.
+ */
+User.prototype.post = function(topic, text) {
+  this.sendPostMessage(topic, text);
+};
+
+/**
+ * Gibt die URL des Profilbilds des Benutzers zurück.
+ * @param {number} [width] - Optionale Breite des Bildes in Pixeln (Standard: 200).
+ * @param {number} [height] - Optionale Höhe des Bildes in Pixeln (Standard: gleich der Breite).
+ * @returns {string} Die URL des Profilbilds.
+ */
+User.prototype.getProfilePicture = function(width, height) {
+  if (width === undefined) {
+    width = 200;
+  }
+
+  if (height === undefined) {
+    height = width;
+  }
+
+  if (this.hasProfilePhoto()) {
+    if (this.getProfilePhoto !== undefined) {
+      return this.getProfilePhoto(width, height);
+    }
+
+    return 'http://chat.knuddels.de/pics/fotos/knuddels.de?n=' + encodeURIComponent(this.getNick()); // URL-Codierung für Sonderzeichen
+  }
+
+  if (this.getGender() == Gender.Female) {
+    return 'nopic_79x79_f.jpg';
+  }
+
+  return 'nopic_79x79_m.jpg';
+};
+
+/**
+ * Gibt das Geschlecht des Benutzers als String zurück ("male", "female" oder "none").
+ * @returns {string} Das Geschlecht des Benutzers als String.
+ */
+User.prototype.getGenderString = function() {
+  switch (this.getGender()) {
+    case Gender.Male:
+      return 'male';
+    case Gender.Female:
+      return 'female';
+  }
+
+  return 'none';
+};
+
+
+// ... (Methoden für den Zugriff auf KBank-Informationen)
+
+module.exports = User; // Exportiere das modifizierte User-Objekt
